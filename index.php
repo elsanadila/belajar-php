@@ -1,19 +1,70 @@
 <?php
 
-echo "Hello Elsa <br>";
+// 1. Buat koneksi dengan mysql
+$con = mysqli_connect("localhost","root","","fakultas");
 
-$nama="Nadila";
-$umur= 21;
+// 2. Cek Koneksi dengan mysql
+if(mysqli_connect_errno()){
+    echo "Koneksi Gagal". mysqli_connect_error();
+    exit();
+}else{
+    echo "";
+}
 
-echo "Halo nama saya <strong>$nama</strong>, berumur $umur tahun. <br>";
+//3. Membaca data dari table mysql
+$query = "SELECT * FROM mahasiswa";
 
-$namadua="Anna";
-$umurdua= 15;
+//4. Menampilkan data, dengan menjalankan sql query
+$result = mysqli_query($con,$query);
+$mahasiswa = [];
+if ($result){
+    //menampilkan data satu per satu
+    while($row = mysqli_fetch_assoc($result)){
+        $mahasiswa[] = $row;
+    }
+    mysqli_free_result($result);
+}
 
-echo "Saya mempunyai adik bernama <strong>$namadua</strong>, yang berumur $umurdua tahun.<br>";
-
-$selisihumur= $umur-$umurdua;
-
-echo "Selisih umur yang terpaut dengan adik saya adalah $selisihumur tahun."
+//5. Menutup Koneksi mysql
+mysqli_close($con);
 
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Mahasiswa</title>
+</head>
+<body>
+    <h1>Data Mahasiswa</h1>
+    <a href="insert.php">Tambah Data</a>
+    <table border="1" style="width:100%;">
+        <tr>
+            <th>NIM</th>
+            <th>Nama</th>
+            <th>Jenis Kelamin</th>
+            <th>Tempat Lahir</th>
+            <th>Tanggal Lahir</th>
+            <th>Alamat</th>
+            <th>Action</th>
+        </tr>
+        <?php foreach($mahasiswa as $value): ?>
+        <tr>
+            <td><?php echo $value["nim"]; ?></td>
+            <td><?php echo $value["nama"]; ?></td>
+            <td><?php echo $value["jenis_kelamin"]; ?></td>
+            <td><?php echo $value["tempat_lahir"]; ?></td>
+            <td><?php echo $value["tanggal_lahir"]; ?></td>
+            <td><?php echo $value["alamat"]; ?></td>
+            <td>
+            <a href="update.php?id=<?= $value['id'] ?>" >Edit</a> | 
+            <a href="delete.php?id=<?= $value['id'] ?>" >Delete</a>
+            </td>
+        </tr>
+        <?php endforeach; ?>
+    </table>
+</body>
+</html>
